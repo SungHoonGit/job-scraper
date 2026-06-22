@@ -1,0 +1,34 @@
+{
+  "output_dir": ".",
+  "retention_days": 20,
+  "notification": true,
+  "max_per_site": 15,
+  "company_info": true,
+  "schedule": {
+    "enabled": true,
+    "hour": 12,
+    "minute": 0
+  },
+  "search": {
+    "query": "react next 프론트 개발자",
+    "career_level": "경력",
+    "career_from": 2,
+    "career_to": 5,
+    "exclude_closed": true
+  },
+  "include_titles": ["react", "next", "프론트", "frontend", "typescript", "웹개발", "웹 개발"],
+  "exclude_titles": ["TOP100", "건설·건축", "마케팅·홍보", "생산·제조", "회계·재무", "인사·총무", "Hardware", "QA Engineer"],
+  "sites": {
+    "jobkorea": {
+      "enabled": true
+    },
+    "saramin": {
+      "enabled": true,
+      "category_code": "84"
+    },
+    "wanted": { "enabled": true },
+    "jumpit": { "enabled": false },
+    "incruit": { "enabled": false },
+    "remember": { "enabled": false }
+  }
+}
