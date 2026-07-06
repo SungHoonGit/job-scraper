@@ -1,7 +1,32 @@
 {
+  "profile": "java",  
   "output_dir": ".",
   "retention_days": 20,
-  "notification": true,
+  "notification": {
+    "enabled": true,
+    "channels": {
+      "email": {
+        "enabled": false,
+        "smtp_host": "smtp.gmail.com",
+        "smtp_port": 587,
+        "use_tls": true,
+        "username": "",
+        "password": "",
+        "from_addr": "",
+        "to_addrs": []
+      },
+      "kakao": {
+        "enabled": false,
+        "rest_api_key": "",
+        "access_token": ""
+      },
+      "telegram": {
+        "enabled": false,
+        "bot_token": "",
+        "chat_id": ""
+      }
+    }
+  },
   "max_per_site": 15,
   "company_info": true,
   "schedule": {

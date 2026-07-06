@@ -20,6 +20,11 @@ from datetime import datetime, timedelta
 
 from extractors import EXTRACTORS
 from extractors.base import BaseExtractor
+from notifiers import NOTIFIERS, JobAlert
+import notifiers.console       # noqa: F401 — register built-in notifiers
+import notifiers.email_notifier  # noqa: F401
+import notifiers.kakao_notifier  # noqa: F401
+import notifiers.telegram_notifier  # noqa: F401
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -54,12 +59,48 @@ def get_history_path(config) -> str:
 
 
 def notify(config, title: str, msg: str):
-    if not config.get("notification", True):
+    nc = config.get("notification", True)
+    if isinstance(nc, dict) and not nc.get("enabled", True):
+        return
+    elif not nc:
         return
     if sys.platform == "darwin":
         subprocess.run(["osascript", "-e", f'display notification "{msg}" with title "{title}"'])
     else:
         print(f"  [notify] {title}: {msg}")
+
+
+def get_notifiers(config):
+    nc = config.get("notification")
+    if not nc:
+        return []
+    channels_config = nc if isinstance(nc, dict) else {}
+    if not channels_config.get("channels"):
+        return []
+
+    instances = []
+    for name, cls in NOTIFIERS.items():
+        if name == "console":
+            continue
+        instance = cls(channels_config["channels"])
+        instances.append(instance)
+    return instances
+
+
+def build_alerts(jobs: list[dict]) -> list[JobAlert]:
+    return [
+        JobAlert(
+            company=j.get("company", ""),
+            title=j.get("title", ""),
+            url=j.get("url_norm") or j["url"],
+            site=j.get("site", ""),
+            career=j.get("career", ""),
+            deadline=j.get("deadline", ""),
+            tech_stack=j.get("tech_stack") or [],
+            company_info=j.get("company_info"),
+        )
+        for j in jobs
+    ]
 
 
 def load_seen_urls(config) -> set:
@@ -283,6 +324,11 @@ def main():
 
     msg = f"{len(all_new)}개 신규 공고 발견"
     notify(config, "Job Scraper", msg)
+
+    alerts = build_alerts(all_new)
+    for n in get_notifiers(config):
+        n.send(alerts)
+
     print(f"Done. {len(all_new)} new jobs.")
 
 

@@ -12,6 +12,7 @@ __pycache__/
 .DS_Store
 Thumbs.db
 
-# Config override (personal — 사용자 검색어 등 포함)
-# 대신 config.java.json / config.react.json 을 템플릿으로 사용
-config.json
+# Secrets
+.env
+
+

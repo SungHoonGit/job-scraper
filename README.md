@@ -262,6 +262,82 @@ daily/YYYY-MM-DD.md 파일은 다음 정보를 테이블로 출력합니다:
 
 > `company_info: true`면 잡코리아 공고당 2회 추가 요청 → 실행 시간 증가
 
+## Notifications (알림)
+
+신규 공고 발견 시 다양한 채널로 알림을 보낼 수 있습니다:
+
+| 채널 | 설정 키 | 비고 |
+|------|---------|------|
+| **Email** | `notifications.channels.email` | SMTP with TLS (Gmail 권장) |
+| **KakaoTalk** | `notifications.channels.kakao` | Kakao Developers REST API 필요 |
+| **Telegram** | `notifications.channels.telegram` | BotFather에서 봇 생성 |
+
+### Email 설정
+
+```json
+"email": {
+  "enabled": true,
+  "smtp_host": "smtp.gmail.com",
+  "smtp_port": 587,
+  "use_tls": true,
+  "username": "your-email@gmail.com",
+  "password": "앱비밀번호",
+  "from_addr": "your-email@gmail.com",
+  "to_addrs": ["recipient@example.com"]
+}
+```
+
+> Gmail은 **앱 비밀번호** 필요: https://myaccount.google.com/apppasswords
+
+### KakaoTalk 설정
+
+1. [Kakao Developers](https://developers.kakao.com) 에서 앱 생성
+2. **카카오 로그인** 활성화 → Redirect URI 등록
+3. **카카오톡 메시지** API 활성화
+4. 사용자 액세스 토큰 발급 (REST API로 `https://kapi.kakao.com/v2/api/talk/memo/default/send` 호출)
+
+```json
+"kakao": {
+  "enabled": true,
+  "rest_api_key": "YOUR_REST_API_KEY",
+  "access_token": "YOUR_ACCESS_TOKEN"
+}
+```
+
+### Telegram 설정
+
+1. [@BotFather](https://t.me/BotFather) 에서 봇 생성 → 토큰 발급
+2. 봇과 대화 시작 후 `https://api.telegram.org/bot<TOKEN>/getUpdates` 에서 chat_id 확인
+
+```json
+"telegram": {
+  "enabled": true,
+  "bot_token": "YOUR_BOT_TOKEN",
+  "chat_id": "YOUR_CHAT_ID"
+}
+```
+
+### 환경변수 (선택)
+
+민감한 정보는 `.env` 파일에 저장하고 `config.json`에서 `${VAR_NAME}` 참조 가능 (추후 구현).
+
+## Project Structure (업데이트)
+
+```
+job-scraper/
+├── config.json              # 설정 (notification 채널 포함)
+├── .env.example             # 환경변수 템플릿 (비밀값)
+├── job_scraper.py           # 메인 실행 스크립트
+├── extractors/              # 채용사이트별 파서
+├── notifiers/               # 알림 채널 모듈
+│   ├── __init__.py          # JobAlert + 레지스트리
+│   ├── console.py           # 콘솔 출력
+│   ├── email_notifier.py    # SMTP TLS 이메일
+│   ├── kakao_notifier.py    # 카카오톡 메시지
+│   └── telegram_notifier.py # 텔레그램 봇
+└── README.md
+```
+
 ## License
 
 MIT
