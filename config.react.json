@@ -17,6 +17,7 @@
       },
       "kakao": {
         "enabled": false,
+        "admin_key": "",
         "rest_api_key": "",
         "access_token": ""
       },

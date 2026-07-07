@@ -37,14 +37,25 @@ class KakaoNotifier:
         c = config.get("kakao", {})
         self.enabled = c.get("enabled", False)
         self.rest_api_key = c.get("rest_api_key") or ""
+        self.admin_key = c.get("admin_key") or ""
         self.access_token = c.get("access_token") or ""
+
+    def _auth_header(self) -> dict | None:
+        if self.admin_key:
+            return {"Authorization": f"KakaoAK {self.admin_key}"}
+        if self.rest_api_key:
+            return {"Authorization": f"KakaoAK {self.rest_api_key}"}
+        if self.access_token:
+            return {"Authorization": f"Bearer {self.access_token}"}
+        return None
 
     def send(self, alerts: list[JobAlert]) -> None:
         if not self.enabled:
             return
 
-        if not self.access_token:
-            print("  [kakao] no access_token configured, skipping")
+        auth = self._auth_header()
+        if not auth:
+            print("  [kakao] set admin_key, rest_api_key, or access_token in config")
             return
 
         count = len(alerts)
@@ -79,7 +90,7 @@ class KakaoNotifier:
         )
 
         headers = {
-            "Authorization": f"Bearer {self.access_token}",
+            **auth,
             "Content-Type": "application/x-www-form-urlencoded",
         }
         try:
