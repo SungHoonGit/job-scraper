@@ -1,5 +1,5 @@
 {
-  "profile": "java",  
+  "profile": "java",
   "output_dir": ".",
   "retention_days": 20,
   "notification": {
@@ -19,7 +19,7 @@
         "enabled": false,
         "admin_key": "",
         "rest_api_key": "",
-        "access_token": ""
+        "access_token": "w4dm0Mu2DgfspFDpvFjagsuQJ8vcslXBAAAAAQoNDSEAAAGfO59zpSrd4XW-Oo9G"
       },
       "telegram": {
         "enabled": false,
@@ -42,8 +42,25 @@
     "career_to": 5,
     "exclude_closed": true
   },
-  "include_titles": ["java", "spring", "백엔드", "backend", "jsp", "웹개발", "웹 개발"],
-  "exclude_titles": ["TOP100", "건설·건축", "마케팅·홍보", "생산·제조", "회계·재무", "인사·총무", "Hardware", "QA Engineer"],
+  "include_titles": [
+    "java",
+    "spring",
+    "백엔드",
+    "backend",
+    "jsp",
+    "웹개발",
+    "웹 개발"
+  ],
+  "exclude_titles": [
+    "TOP100",
+    "건설·건축",
+    "마케팅·홍보",
+    "생산·제조",
+    "회계·재무",
+    "인사·총무",
+    "Hardware",
+    "QA Engineer"
+  ],
   "sites": {
     "jobkorea": {
       "enabled": true
@@ -52,9 +69,17 @@
       "enabled": true,
       "category_code": "84"
     },
-    "wanted": { "enabled": true },
-    "jumpit": { "enabled": false },
-    "incruit": { "enabled": false },
-    "remember": { "enabled": false }
+    "wanted": {
+      "enabled": true
+    },
+    "jumpit": {
+      "enabled": false
+    },
+    "incruit": {
+      "enabled": false
+    },
+    "remember": {
+      "enabled": false
+    }
   }
 }

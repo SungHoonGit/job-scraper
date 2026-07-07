@@ -41,12 +41,10 @@ class KakaoNotifier:
         self.access_token = c.get("access_token") or ""
 
     def _auth_header(self) -> dict | None:
-        if self.admin_key:
-            return {"Authorization": f"KakaoAK {self.admin_key}"}
-        if self.rest_api_key:
-            return {"Authorization": f"KakaoAK {self.rest_api_key}"}
         if self.access_token:
             return {"Authorization": f"Bearer {self.access_token}"}
+        print("  [kakao] access_token is required for KakaoTalk Message API")
+        print("  [kakao] run: python scripts/get_kakao_token.py")
         return None
 
     def send(self, alerts: list[JobAlert]) -> None:
