@@ -36,7 +36,9 @@ def load_config():
 
 
 def resolve(path: str) -> str:
-    return os.path.expanduser(path)
+    if not os.path.isabs(path):
+        path = os.path.join(SCRIPT_DIR, path)
+    return os.path.abspath(os.path.expanduser(path))
 
 
 def _profile(config) -> str:
