@@ -292,9 +292,16 @@ daily/YYYY-MM-DD.md 파일은 다음 정보를 테이블로 출력합니다:
 ### KakaoTalk 설정
 
 1. [Kakao Developers](https://developers.kakao.com) 에서 앱 생성
-2. **카카오 로그인** 활성화 → Redirect URI 등록
+2. **카카오 로그인** 활성화 → Redirect URI 에 `https://localhost` 등록
 3. **카카오톡 메시지** API 활성화
-4. 사용자 액세스 토큰 발급 (REST API로 `https://kapi.kakao.com/v2/api/talk/memo/default/send` 호출)
+4. **카카오 로그인** → **동의항목** → `카카오톡 메시지 전송` **필수 동의**
+5. 액세스 토큰 발급 (아래 도우미 스크립트 실행):
+
+```powershell
+python scripts\get_kakao_token.py
+```
+
+→ 브라우저 로그인 → 리다이렉트 URL 복사 붙여넣기 → 자동 config 저장
 
 ```json
 "kakao": {
@@ -335,6 +342,8 @@ job-scraper/
 │   ├── email_notifier.py    # SMTP TLS 이메일
 │   ├── kakao_notifier.py    # 카카오톡 메시지
 │   └── telegram_notifier.py # 텔레그램 봇
+├── scripts/
+│   └── get_kakao_token.py   # KakaoTalk OAuth 토큰 발급 도우미
 └── README.md
 ```
 
