@@ -15,4 +15,7 @@ Thumbs.db
 # Secrets
 .env
 
+# Temp scripts
+_check_*.py
+
 
