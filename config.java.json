@@ -1,85 +1,25 @@
 {
-  "profile": "java",
   "output_dir": ".",
   "retention_days": 20,
-  "notification": {
-    "enabled": true,
-    "channels": {
-      "email": {
-        "enabled": false,
-        "smtp_host": "smtp.gmail.com",
-        "smtp_port": 587,
-        "use_tls": true,
-        "username": "",
-        "password": "",
-        "from_addr": "",
-        "to_addrs": []
-      },
-      "kakao": {
-        "enabled": false,
-        "admin_key": "",
-        "rest_api_key": "",
-        "access_token": "w4dm0Mu2DgfspFDpvFjagsuQJ8vcslXBAAAAAQoNDSEAAAGfO59zpSrd4XW-Oo9G"
-      },
-      "telegram": {
-        "enabled": false,
-        "bot_token": "",
-        "chat_id": ""
-      }
-    }
-  },
+  "notification": false,
   "max_per_site": 15,
-  "company_info": true,
-  "schedule": {
-    "enabled": true,
-    "hour": 10,
-    "minute": 0
-  },
+  "company_info": false,
+  "profile": "java",
   "search": {
-    "query": "Java Spring 백엔드 개발자",
+    "query": "Java Spring 백엔드 개발자 서울 경기",
     "career_level": "경력",
-    "career_from": 2,
+    "career_from": 3,
     "career_to": 5,
     "exclude_closed": true
   },
-  "include_titles": [
-    "java",
-    "spring",
-    "백엔드",
-    "backend",
-    "jsp",
-    "웹개발",
-    "웹 개발"
-  ],
-  "exclude_titles": [
-    "TOP100",
-    "건설·건축",
-    "마케팅·홍보",
-    "생산·제조",
-    "회계·재무",
-    "인사·총무",
-    "Hardware",
-    "QA Engineer"
-  ],
+  "include_titles": ["java", "spring", "백엔드", "backend", "server"],
+  "exclude_titles": ["TOP100", "건설", "마케팅", "생산", "회계", "인사", "QA", "프론트"],
   "sites": {
-    "jobkorea": {
-      "enabled": true
-    },
-    "saramin": {
-      "enabled": true,
-      "category_code": "84"
-    },
-    "wanted": {
-      "enabled": true
-    },
-    "jumpit": {
-      "enabled": false
-    },
-    "incruit": {
-      "enabled": false
-    },
-    "remember": {
-      "enabled": false
-    }
+    "jobkorea": { "enabled": true },
+    "saramin": { "enabled": true, "category_code": "84" },
+    "wanted": { "enabled": true },
+    "jumpit": { "enabled": false },
+    "incruit": { "enabled": false },
+    "remember": { "enabled": false }
   }
 }
