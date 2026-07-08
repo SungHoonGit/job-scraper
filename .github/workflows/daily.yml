@@ -1,0 +1,78 @@
+name: Daily Job Scraper
+
+on:
+  schedule:
+    - cron: '0 0 * * *'   # KST 09:00 = UTC 00:00
+  workflow_dispatch:       # 수동 실행도 가능
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GH_PAT }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install requests beautifulsoup4 lxml
+
+      - name: Run scraper
+        env:
+          KAKAO_REST_API_KEY: ${{ secrets.KAKAO_REST_API_KEY }}
+          KAKAO_REFRESH_TOKEN: ${{ secrets.KAKAO_REFRESH_TOKEN }}
+        run: python job_scraper.py
+
+      - name: Commit results
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff --cached --quiet || git commit -m "daily scrape $(date +'%Y-%m-%d %H:%M')"
+          git push
+
+      - name: Send Kakao notification
+        env:
+          KAKAO_REST_API_KEY: ${{ secrets.KAKAO_REST_API_KEY }}
+          KAKAO_REFRESH_TOKEN: ${{ secrets.KAKAO_REFRESH_TOKEN }}
+        run: |
+          pip install requests
+          python3 -c "
+          import os, json, requests
+
+          REST_KEY = os.environ['KAKAO_REST_API_KEY']
+          REFRESH = os.environ['KAKAO_REFRESH_TOKEN']
+
+          # 토큰 갱신
+          r = requests.post('https://kauth.kakao.com/oauth/token', data={
+              'grant_type': 'refresh_token',
+              'client_id': REST_KEY,
+              'refresh_token': REFRESH,
+          }, timeout=15)
+          token = r.json().get('access_token', '')
+
+          if token:
+              # daily 파일 읽어서 알림
+              from pathlib import Path
+              daily_files = sorted(Path('daily').glob('*.md'))
+              if daily_files:
+                  content = daily_files[-1].read_text()[:500]
+                  template = {
+                      'object_type': 'text',
+                      'text': f'[Job Scraper] {daily_files[-1].stem} 수집 완료\n{content[:300]}',
+                      'link': {'web_url': 'https://github.com/SungHoonGit/job-scraper',
+                               'mobile_web_url': 'https://github.com/SungHoonGit/job-scraper'}
+                  }
+                  headers = {'Authorization': f'Bearer {token}',
+                             'Content-Type': 'application/x-www-form-urlencoded'}
+                  res = requests.post(
+                      'https://kapi.kakao.com/v2/api/talk/memo/default/send',
+                      headers=headers,
+                      data={'template_object': json.dumps(template, ensure_ascii=False)},
+                      timeout=15
+                  )
+                  print('Kakao:', res.json())
+          "
