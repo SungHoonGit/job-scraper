@@ -20,23 +20,54 @@ jobs:
       - name: Install dependencies
         run: pip install requests beautifulsoup4 lxml
 
-      - name: Create config.json
+      - name: Create config files
         run: |
-          cat > config.json << 'EOF'
+          # React profile
+          cat > config.react.json << 'EOF'
           {
             "output_dir": ".",
             "retention_days": 20,
             "notification": false,
             "max_per_site": 15,
             "company_info": false,
-            "profile": "",
+            "profile": "react",
             "search": {
               "query": "React Next.js TypeScript 프론트엔드 개발자",
               "career_level": "경력",
+              "career_from": 2,
+              "career_to": 5,
               "exclude_closed": true
             },
             "include_titles": ["react", "next", "프론트", "frontend", "typescript", "웹개발"],
-            "exclude_titles": ["TOP100", "건설·건축", "마케팅", "생산", "회계", "인사", "QA"],
+            "exclude_titles": ["TOP100", "건설", "마케팅", "생산", "회계", "인사", "QA"],
+            "sites": {
+              "jobkorea": { "enabled": true },
+              "saramin": { "enabled": true, "category_code": "84" },
+              "wanted": { "enabled": true },
+              "jumpit": { "enabled": false },
+              "incruit": { "enabled": false },
+              "remember": { "enabled": false }
+            }
+          }
+          EOF
+          # Java profile
+          cat > config.java.json << 'EOF'
+          {
+            "output_dir": ".",
+            "retention_days": 20,
+            "notification": false,
+            "max_per_site": 15,
+            "company_info": false,
+            "profile": "java",
+            "search": {
+              "query": "Java Spring 백엔드 개발자",
+              "career_level": "경력",
+              "career_from": 3,
+              "career_to": 7,
+              "exclude_closed": true
+            },
+            "include_titles": ["java", "spring", "백엔드", "backend", "server"],
+            "exclude_titles": ["TOP100", "건설", "마케팅", "생산", "회계", "인사", "QA", "프론트"],
             "sites": {
               "jobkorea": { "enabled": true },
               "saramin": { "enabled": true, "category_code": "84" },
@@ -48,8 +79,11 @@ jobs:
           }
           EOF
 
-      - name: Run scraper
-        run: python job_scraper.py
+      - name: Run scraper (React profile)
+        run: python job_scraper.py --profile react
+
+      - name: Run scraper (Java profile)
+        run: python job_scraper.py --profile java
 
       - name: Commit results
         run: |
