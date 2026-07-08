@@ -1,5 +1,5 @@
 # Output
-daily/
+daily/*.md
 history*.md
 
 # Python
