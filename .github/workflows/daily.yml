@@ -53,8 +53,8 @@ jobs:
 
       - name: Commit results
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config user.name "SungHoonGit"
+          git config user.email "ksa134652@naver.com"
           git add -A
           git diff --cached --quiet || git commit -m "daily scrape $(date +'%Y-%m-%d %H:%M')"
           git push
