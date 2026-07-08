@@ -32,10 +32,10 @@ jobs:
             "company_info": false,
             "profile": "react",
             "search": {
-              "query": "React Next.js TypeScript 프론트엔드 개발자",
+              "query": "React Next.js TypeScript 프론트엔드 개발자 서울 경기",
               "career_level": "경력",
               "career_from": 2,
-              "career_to": 5,
+              "career_to": 2,
               "exclude_closed": true
             },
             "include_titles": ["react", "next", "프론트", "frontend", "typescript", "웹개발"],
@@ -60,10 +60,10 @@ jobs:
             "company_info": false,
             "profile": "java",
             "search": {
-              "query": "Java Spring 백엔드 개발자",
+              "query": "Java Spring 백엔드 개발자 서울 경기",
               "career_level": "경력",
               "career_from": 3,
-              "career_to": 7,
+              "career_to": 5,
               "exclude_closed": true
             },
             "include_titles": ["java", "spring", "백엔드", "backend", "server"],
