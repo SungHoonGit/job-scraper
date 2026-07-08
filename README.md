@@ -8,6 +8,12 @@
 - pip packages: `requests`, `beautifulsoup4`, `lxml`
 - macOS (launchd 자동 실행 및 알림) / Windows (직접 실행)
 
+## ⚠️ 중요: config.json 보안
+
+`config.json`은 API 키 등 민감정보를 포함하므로 **git에 절대 커밋되지 않습니다** (`.gitignore`에 등록됨).
+- 로컬에서 `config.example.json`을 복사해서 사용
+- GitHub Actions에서는 workflow에서 자동 생성 (Secrets 사용)
+
 ## Quick Start
 
 ### macOS
@@ -262,6 +268,27 @@ daily/YYYY-MM-DD.md 파일은 다음 정보를 테이블로 출력합니다:
 
 > `company_info: true`면 잡코리아 공고당 2회 추가 요청 → 실행 시간 증가
 
+## GitHub Actions 자동화 (2026-07-08 추가)
+
+매일 09:00 KST에 자동으로 스크래핑 → git commit/push → KakaoTalk 알림을 실행합니다.
+
+### 설정 방법
+1. GitHub repo → **Settings → Secrets and variables → Actions** 에 아래 등록:
+   - `GH_PAT`: Personal Access Token (`repo` + `workflow` scope)
+   - `KAKAO_REST_API_KEY`: Kakao Developers REST API 키
+   - `KAKAO_REFRESH_TOKEN`: Kakao OAuth refresh token
+2. 수동 실행: **Actions → Daily Job Scraper → Run workflow**
+
+### 동작 흐름
+```
+09:00 KST → job_scraper.py 실행 → daily/*.md 생성
+       → git commit + push (잔디 심김)
+       → Kakao API (나에게 카톡 전송)
+```
+
+### 관련 프로젝트
+- [kakao-bot](https://github.com/SungHoonGit/kakao-bot) — Kakao API 래퍼 + 웹훅 서버
+
 ## Notifications (알림)
 
 신규 공고 발견 시 다양한 채널로 알림을 보낼 수 있습니다:
@@ -344,6 +371,9 @@ job-scraper/
 │   └── telegram_notifier.py # 텔레그램 봇
 ├── scripts/
 │   └── get_kakao_token.py   # KakaoTalk OAuth 토큰 발급 도우미
+├── .github/
+│   └── workflows/
+│       └── daily.yml        # GitHub Actions (매일 09:00 자동 실행)
 └── README.md
 ```
 
