@@ -3,8 +3,10 @@
 KakaoTalk OAuth 토큰 발급 도우미
 
 사용법:
-    python scripts/get_kakao_token.py
+    python scripts/get_kakao_token.py --config config.react.json
+    python scripts/get_kakao_token.py --config config.java.json
 """
+import argparse
 import json
 import os
 import sys
@@ -16,9 +18,7 @@ import requests
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_DIR = os.path.dirname(SCRIPT_DIR)
 
-CONFIG_PATH = os.path.join(PROJECT_DIR, "config.json")
-# config.react.json / config.java.json 중 현재 사용중인 프로필
-ALT_CONFIGS = ["config.react.json", "config.java.json"]
+PROFILE_CONFIGS = ["config.react.json", "config.java.json"]
 
 
 def load_config(path):
@@ -32,18 +32,35 @@ def save_config(path, data):
         f.write("\n")
 
 
-def main():
-    # 1. REST API 키 읽기
-    cfg_path = CONFIG_PATH
-    if not os.path.exists(cfg_path):
-        for alt in ALT_CONFIGS:
-            p = os.path.join(PROJECT_DIR, alt)
-            if os.path.exists(p):
-                cfg_path = p
-                break
-        else:
-            print("config.json 을 찾을 수 없습니다.")
+def parse_args():
+    parser = argparse.ArgumentParser(description="KakaoTalk OAuth token helper")
+    parser.add_argument(
+        "--config", "-c",
+        help="Config JSON path (default: first existing profile config)",
+    )
+    return parser.parse_args()
+
+
+def resolve_config_path(config_arg):
+    if config_arg:
+        path = config_arg if os.path.isabs(config_arg) else os.path.join(PROJECT_DIR, config_arg)
+        if not os.path.isfile(path):
+            print(f"Config file not found: {path}")
             sys.exit(1)
+        return path
+
+    for name in PROFILE_CONFIGS:
+        path = os.path.join(PROJECT_DIR, name)
+        if os.path.isfile(path):
+            return path
+
+    print("Config file not found. Use --config config.react.json")
+    sys.exit(1)
+
+
+def main():
+    args = parse_args()
+    cfg_path = resolve_config_path(args.config)
 
     cfg = load_config(cfg_path)
     nc = cfg.get("notification", {})
@@ -53,7 +70,7 @@ def main():
 
     if not rest_api_key:
         print("config.kakao.rest_api_key 가 설정되지 않았습니다.")
-        print("먼저 config.json 에 rest_api_key 를 입력해주세요.")
+        print(f"먼저 {os.path.basename(cfg_path)} 에 rest_api_key 를 입력해주세요.")
         sys.exit(1)
 
     REDIRECT_URI = "https://localhost"
@@ -120,8 +137,8 @@ def main():
 
         # 5. config 업데이트 (여러 config 파일)
         configs_to_update = [cfg_path]
-        for alt in ALT_CONFIGS:
-            p = os.path.join(PROJECT_DIR, alt)
+        for name in PROFILE_CONFIGS:
+            p = os.path.join(PROJECT_DIR, name)
             if p != cfg_path and os.path.exists(p):
                 configs_to_update.append(p)
 

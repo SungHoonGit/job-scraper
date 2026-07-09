@@ -3,14 +3,12 @@
 Job Scraper — Modular job posting collector for Korean job sites.
 
 Usage:
-    python3 job_scraper.py                        # normal run
-    python3 job_scraper.py --dry-run              # preview only, no files written
-    python3 job_scraper.py --rebuild              # rebuild history.md from daily/
-    python3 job_scraper.py --profile react        # use daily/react/ + history.react.md
-    python3 job_scraper.py --profile java --rebuild  # rebuild specific profile
-
-Profile can also be set via config.json: { "profile": "react", ... }
+    python3 job_scraper.py --config config.react.json
+    python3 job_scraper.py --config config.java.json --dry-run
+    python3 job_scraper.py --config config.react.json --rebuild
+    python3 job_scraper.py --config config.java.json --profile java --rebuild
 """
+import argparse
 import json
 import os
 import re
@@ -29,10 +27,38 @@ import notifiers.telegram_notifier  # noqa: F401
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
-def load_config():
-    path = os.path.join(SCRIPT_DIR, "config.json")
+def load_config(config_path: str) -> dict:
+    path = resolve(config_path)
+    if not os.path.isfile(path):
+        print(f"Error: config file not found: {path}")
+        print("Usage: python3 job_scraper.py --config config.react.json")
+        sys.exit(1)
     with open(path, "r", encoding="utf-8") as f:
         return json.load(f)
+
+
+def parse_args():
+    parser = argparse.ArgumentParser(description="Korean job site scraper")
+    parser.add_argument(
+        "--config", "-c",
+        required=True,
+        help="Config JSON path (e.g. config.react.json, config.java.json)",
+    )
+    parser.add_argument(
+        "--profile",
+        help="Override profile in config (sets daily/{profile}/ and history.{profile}.md)",
+    )
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Preview only; do not write files or send notifications",
+    )
+    parser.add_argument(
+        "--rebuild",
+        action="store_true",
+        help="Rebuild history from daily/ only",
+    )
+    return parser.parse_args()
 
 
 def resolve(path: str) -> str:
@@ -245,13 +271,13 @@ def rebuild_history(config):
 
 
 def main():
-    config = load_config()
-    dry_run = "--dry-run" in sys.argv
-    rebuild = "--rebuild" in sys.argv
-    # CLI --profile overrides config's profile field
-    for i, arg in enumerate(sys.argv):
-        if arg == "--profile" and i + 1 < len(sys.argv):
-            config["profile"] = sys.argv[i + 1]
+    args = parse_args()
+    config = load_config(args.config)
+    if args.profile:
+        config["profile"] = args.profile
+
+    dry_run = args.dry_run
+    rebuild = args.rebuild
 
     if rebuild:
         rebuild_history(config)

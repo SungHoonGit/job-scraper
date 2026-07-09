@@ -27,22 +27,22 @@ else
     echo "[OK] Dependencies installed"
 fi
 
-# Create config from example
-if [ ! -f config.json ]; then
-    cp config.example.json config.json
-    echo "[OK] config.json created (edit it first!)"
-else
-    echo "[OK] config.json exists"
+PROFILE="${1:-react}"
+CONFIG_FILE="config.${PROFILE}.json"
+
+if [ ! -f "$CONFIG_FILE" ]; then
+    echo "Error: $CONFIG_FILE not found."
+    echo "Usage: bash setup.sh [react|java]"
+    exit 1
 fi
+echo "[OK] Using $CONFIG_FILE"
 
-# Create daily directory
-mkdir -p daily
-echo "[OK] daily/ directory ready"
+mkdir -p "daily/$PROFILE"
+echo "[OK] daily/$PROFILE/ directory ready"
 
-# Parse schedule from config.json
-SCHEDULE_ENABLED=$(python3 -c "import json; c=json.load(open('config.json')); print(str(c.get('schedule', {}).get('enabled', False)).lower())" 2>/dev/null || echo "false")
-SCHEDULE_HOUR=$(python3 -c "import json; c=json.load(open('config.json')); print(c.get('schedule', {}).get('hour', 10))" 2>/dev/null || echo "10")
-SCHEDULE_MINUTE=$(python3 -c "import json; c=json.load(open('config.json')); print(c.get('schedule', {}).get('minute', 0))" 2>/dev/null || echo "0")
+SCHEDULE_ENABLED=$(python3 -c "import json; c=json.load(open('$CONFIG_FILE')); print(str(c.get('schedule', {}).get('enabled', False)).lower())" 2>/dev/null || echo "false")
+SCHEDULE_HOUR=$(python3 -c "import json; c=json.load(open('$CONFIG_FILE')); print(c.get('schedule', {}).get('hour', 10))" 2>/dev/null || echo "10")
+SCHEDULE_MINUTE=$(python3 -c "import json; c=json.load(open('$CONFIG_FILE')); print(c.get('schedule', {}).get('minute', 0))" 2>/dev/null || echo "0")
 
 if [ "$SCHEDULE_ENABLED" = "true" ]; then
     LABEL="com.jobscraper.daily"
@@ -63,6 +63,8 @@ if [ "$SCHEDULE_ENABLED" = "true" ]; then
         <string>/usr/bin/python3</string>
         <string>-u</string>
         <string>$PROJECT_DIR/job_scraper.py</string>
+        <string>--config</string>
+        <string>$CONFIG_FILE</string>
     </array>
     <key>WorkingDirectory</key>
     <string>$PROJECT_DIR</string>
@@ -93,7 +95,7 @@ EOF
     launchctl load "$PLIST_PATH"
     echo "[OK] launchd loaded (매일 $SCHEDULE_HOUR:$SCHEDULE_MINUTE 실행)"
 else
-    echo "[SKIP] Scheduling disabled in config.json (schedule.enabled: false)"
+    echo "[SKIP] Scheduling disabled in $CONFIG_FILE (schedule.enabled: false)"
     echo "  To enable: set schedule.enabled to true and re-run setup.sh"
 fi
 
@@ -101,7 +103,7 @@ echo ""
 echo "=== Setup Complete ==="
 echo ""
 echo "Next:"
-echo "  vim config.json              # 검색어/경력/스케줄 수정"
-echo "  python3 job_scraper.py       # 수동 실행"
+echo "  vim $CONFIG_FILE             # 검색어/경력/스케줄 수정"
+echo "  python3 job_scraper.py --config $CONFIG_FILE   # 수동 실행"
 echo ""
 echo "Logs: tail -f /tmp/jobscraper.stdout.log"
