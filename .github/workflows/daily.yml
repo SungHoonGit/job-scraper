@@ -2,7 +2,7 @@ name: Daily Job Scraper
 
 on:
   schedule:
-    - cron: '0 0 * * *'   # KST 09:00 = UTC 00:00
+    - cron: '*/5 * * * *'   # KST 09:00 = UTC 00:00
   workflow_dispatch:       # 수동 실행도 가능
 
 jobs:
