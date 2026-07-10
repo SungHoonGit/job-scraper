@@ -17,5 +17,5 @@ jobs:
           script: |
             cd /home/ubuntu/job-scraper
             git pull
-            pip3 install requests beautifulsoup4 lxml -q
+            pip3 install requests beautifulsoup4 lxml -q --break-system-packages
             echo "Deploy complete!"
