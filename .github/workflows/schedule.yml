@@ -1,0 +1,23 @@
+name: Job Scraper (매일 9시)
+
+on:
+  schedule:
+    - cron: '0 9 * * *'  # KST 9시 = UTC 0시
+  workflow_dispatch:
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    steps:
+      - name: SSH and run scraper
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.OCI_WEB_HOST }}
+          username: ubuntu
+          key: ${{ secrets.OCI_SSH_KEY }}
+          script: |
+            cd /home/ubuntu/job-scraper
+            git pull origin main
+            pip3 install requests beautifulsoup4 lxml -q --break-system-packages
+            python3 job_scraper.py --config config.react.json 2>&1 || true
+            python3 job_scraper.py --config config.java.json 2>&1 || true
