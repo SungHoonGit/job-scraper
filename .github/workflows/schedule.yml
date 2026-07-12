@@ -12,7 +12,7 @@ jobs:
       - name: SSH and run scraper
         uses: appleboy/ssh-action@v1
         with:
-          host: ${{ secrets.OCI_WEB_HOST }}
+          host: 140.245.95.162
           username: ubuntu
           key: ${{ secrets.OCI_SSH_KEY }}
           script: |
